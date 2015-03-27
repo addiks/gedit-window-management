@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="de.addiks.gedit.window_management" path="/de/addiks/gedit/window_management/">
+      <key type="b" name="autoresize">
+          <default>false</default>
+          <summary>Automaticly resize windows</summary>
+          <description>Automaticly resize windows</description>
+      </key>
+      <key type="b" name="no-tabs">
+          <default>false</default>
+          <summary>Enforce every view in it's own window</summary>
+          <description>Enforce every view in it's own window</description>
+      </key>
+      <key type="b" name="no-double-files">
+          <default>false</default>
+          <summary>Prevent files to be open twice</summary>
+          <description>Prevent files to be open twice</description>
+      </key>
+  </schema>
+</schemalist>

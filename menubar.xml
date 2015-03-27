@@ -1,0 +1,8 @@
+<ui>
+    <menubar name="MenuBar">
+        <menu name="ViewMenu" action="View">
+            <separator/>
+            <menuitem name="FitWindowToContent" action="FitWindowToContentAction"/>
+        </menu>
+    </menubar>
+</ui>
