@@ -1,14 +1,18 @@
-"""
- * Copyright (C) 2013  Gerrit Addiks.
- * This package (including this file) was released under the terms of the GPL-3.0.
- * You should have received a copy of the GNU General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/> or send me a mail so i can send you a copy.
- * 
- * @license GPL-3.0
- * @author Gerrit Addiks <gerrit@addiks.de>
- * @web http://addiks.net/gedit-plugin-git-menu/
- * @version 1.0
-"""
+# Copyright (C) 2015 Gerrit Addiks <gerrit@addiks.net>
+# https://github.com/addiks/gedit-window-management
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
