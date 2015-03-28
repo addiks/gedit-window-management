@@ -158,7 +158,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
                             if path == myPath and otherWindow.window != window:
                                 myTab = window.get_tab_from_location(myLocation)
                                 window.close_tab(myTab)
-                                start_new_thread(self.delayed_present, (otherWindow, ))
+                                start_new_thread(self.delayed_present, (otherWindow.window, ))
                                 return
 
         if len(self.window.get_views())>1 and AddiksWindowManagementApp.get().get_settings().get_boolean("no-tabs"):
