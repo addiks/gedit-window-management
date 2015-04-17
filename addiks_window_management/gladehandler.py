@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from gi.repository import GLib, Gtk, Gdk
-from helpers import *
+from addiks_window_management.helpers import *
 from os.path import expanduser
 import traceback
 

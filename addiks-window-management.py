@@ -165,20 +165,20 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             if myLocation != None:
                 myPath = myLocation.get_path()
                 for otherWindow in AddiksWindowManagementApp.get().get_all_windows():
-                    for view in otherWindow.window.get_views():
-                        document = view.get_buffer()
-                        location = document.get_location()
-                        if location != None:
-                            path = location.get_path()
+                    for otherView in otherWindow.window.get_views():
+                        otherDocument = otherView.get_buffer()
+                        otherLocation = otherDocument.get_location()
+                        if otherLocation != None:
+                            path = otherLocation.get_path()
                             if path == myPath and otherWindow.window != window:
                                 myTab = window.get_tab_from_location(myLocation)
-                                window.close_tab(myTab)
-                                start_new_thread(self.delayed_present, (otherWindow.window, ))
-                                return
+                                otherTab = otherWindow.window.get_tab_from_location(otherLocation)
+                                start_new_thread(self.delayed_close_tab, (otherWindow.window, otherTab, ))
+                                start_new_thread(self.delayed_present, (window, ))
 
         if len(self.window.get_views())>1 and AddiksWindowManagementApp.get().get_settings().get_boolean("no-tabs"):
             view = tab.get_view()
-            
+
             ### DETERMINE LOCATION/LINE/COLUMN
 
             document = view.get_buffer()
@@ -192,7 +192,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
 
             ### CLOSE CURRENT TAB
 
-            window.close_tab(tab)
+            GLib.idle_add(self.delayed_close_tab, window, tab)
             
             ### OPEN NEW TAB IN NEW WINDOW
 
@@ -213,8 +213,14 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             start_new_thread(self.delayed_present, (newWindow, ))
 
     def delayed_present(self, window):
-        sleep(0.01)
+        sleep(0.02)
         GLib.idle_add(window.present)
+
+    def delayed_close_tab(self, window, tab):
+        sleep(0.01)
+        window.close_tab(tab)
+        if len(window.get_views())<=0:
+            window.close()
 
     def on_auto_fit_window(self, action=None, data=None):
         if AddiksWindowManagementApp.get().get_settings().get_boolean("autoresize"):

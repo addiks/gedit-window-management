@@ -50,4 +50,8 @@ def get_namespace_by_classname(className):
             namespace = "\\"
 
     return (namespace, newClassName)
+
+def debug(message):
+    with open("/tmp/ga_debug.log", "a+") as f:
+        f.write(str(message) + "\n")
  
