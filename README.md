@@ -1,13 +1,14 @@
 Gedit plugin: Window Management
 ===================================
 
-Several separate activatable small changes to gedit-window management: Prevent tabs; Prevent files open twice; Automaticly resize windows to fit content
+Several separate activatable small changes to gedit-window management.
 
 ## Features
 
  * Prevent tabs (every view in it's own window)
  * Prevent files to be open twice (highlights the first one instead)
  * Automaticly resize windows to fit content
+ * Hide the new toolbar that normally cannot be hidden.
  * Configurable
 
 ## Licence

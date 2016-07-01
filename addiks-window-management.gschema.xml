@@ -16,5 +16,10 @@
           <summary>Prevent files to be open twice</summary>
           <description>Prevent files to be open twice</description>
       </key>
+      <key type="b" name="hide-toolbar">
+          <default>false</default>
+          <summary>Hides the new toolbar which normally cannot be hidden</summary>
+          <description>Hides the new toolbar which normally cannot be hidden</description>
+      </key>
   </schema>
 </schemalist>
