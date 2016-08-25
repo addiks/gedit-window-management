@@ -50,7 +50,8 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             self.set_toolbar_visible(False)
 
     def set_toolbar_visible(self, isVisible):
-        box, = self.window.get_children()
+        windowChildren = self.window.get_children()
+        box = windowChildren[0]
         paned = None
         for boxChild in box.get_children():
             if type(boxChild) == Gtk.Paned:
@@ -133,11 +134,27 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
         else:
             tab = newWindow.create_tab(True)
 
-        start_new_thread(self.delayed_present, (newWindow, ))
+        start_new_thread(self.delayed_present, (newWindow, line, column))
 
-    def delayed_present(self, window):
+    def delayed_present(self, window, line=None, column=None):
         sleep(0.02)
-        GLib.idle_add(window.present)
+        GLib.idle_add(self.__present, window, line, column)
+
+    def __present(self, window, line=None, column=None):
+        window.present()
+        if line != None:
+            if column == None:
+                column = 0
+
+            print([line, column])
+
+            textView = window.get_active_view()
+
+            document = textView.get_buffer()
+            textIter = document.get_end_iter().copy()
+            textIter.set_line(line)
+            textIter.set_line_offset(column)
+            textView.scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
 
     def on_auto_fit_window(self, action=None, data=None):
         if AddiksWindowManagementApp.get().get_settings().get_boolean("autoresize"):
@@ -184,4 +201,3 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
 
     #        rect = textView.get_allocation()
     #        print((rect.width))
-
