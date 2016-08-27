@@ -2,7 +2,7 @@
 Loader=python3
 Module=addiks-window-management
 IAge=3
-Name=Addiks - Window Management
+Name=Addiks - Window Management - v0.1.0
 Description=Several separate activatable small changes to gedit-window management: Prevent tabs; Prevent files open twice; Automaticly resize windows to fit content
 Authors=Gerrit Addiks <gerrit@addiks.de>
 Copyright=Copyright (C) 2015 Gerrit Addiks
