@@ -75,6 +75,8 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
     def on_tab_added(self, window, tab, userData=None):
         event = Gtk.get_current_event()
         time  = Gtk.get_current_event_time()
+        wasClosed = False
+        noTabsEnabled = AddiksWindowManagementApp.get().get_settings().get_boolean("no-tabs")
 
         if AddiksWindowManagementApp.get().get_settings().get_boolean("no-double-files"):
             view = tab.get_view()
@@ -91,10 +93,11 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
                             if path == myPath and otherWindow.window != window:
                                 myTab = window.get_tab_from_location(myLocation)
                                 otherTab = otherWindow.window.get_tab_from_location(otherLocation)
-                                start_new_thread(self.delayed_close_tab, (otherWindow.window, otherTab, ))
-                                start_new_thread(self.delayed_present, (window, ))
+                                start_new_thread(self.delayed_close_tab, (window, tab))
+                                start_new_thread(self.delayed_present, (otherWindow.window, ))
+                                wasClosed = True
 
-        if len(self.window.get_views())>1 and AddiksWindowManagementApp.get().get_settings().get_boolean("no-tabs"):
+        if len(self.window.get_views())>1 and noTabsEnabled and not wasClosed:
             view = tab.get_view()
 
             ### DETERMINE LOCATION/LINE/COLUMN
@@ -108,33 +111,48 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             line   = insertIter.get_line()
             column = insertIter.get_line_offset()
 
-            GLib.idle_add(self.delayed_close_tab, window, tab, location, line, column)
+            GLib.idle_add(self.delayed_close_tab, window, tab, True)
 
-    def delayed_close_tab(self, window, tab, location, line, column):
+    def delayed_close_tab(self, window, tab, reOpen=False):
+        location = None
+        line = None
+        column = None
+
+        if reOpen:
+            view = tab.get_view()
+            document = view.get_buffer()
+            location = document.get_location()
+
+            insertMark = view.get_buffer().get_insert()
+            insertIter = view.get_buffer().get_iter_at_mark(insertMark)
+
+            line   = insertIter.get_line()
+            column = insertIter.get_line_offset()
+
         GLib.idle_add(self.do_delayed_close_tab, window, tab, location, line, column)
 
-    def do_delayed_close_tab(self, window, tab, location, line, column):
+    def do_delayed_close_tab(self, window, tab, location=None, line=None, column=None):
         window.close_tab(tab)
         if len(window.get_views())<=0:
             window.close()
 
         ### REOPEN IN NEW WINDOW
-
-        newWindow = AddiksWindowManagementApp.get().app.create_window()
-
         if location != None:
-            tab = newWindow.create_tab_from_location(location, None, line, column, False, True)
+            newWindow = AddiksWindowManagementApp.get().app.create_window()
 
-            document = tab.get_view().get_buffer()
-            textIter = document.get_end_iter().copy()
-            textIter.set_line(line)
-            textIter.set_line_offset(column)
-            tab.get_view().scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
+            if location != None:
+                tab = newWindow.create_tab_from_location(location, None, line, column, False, True)
 
-        else:
-            tab = newWindow.create_tab(True)
+                document = tab.get_view().get_buffer()
+                textIter = document.get_end_iter().copy()
+                textIter.set_line(line)
+                textIter.set_line_offset(column)
+                tab.get_view().scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
 
-        start_new_thread(self.delayed_present, (newWindow, line, column))
+            else:
+                tab = newWindow.create_tab(True)
+
+            start_new_thread(self.delayed_present, (newWindow, line, column))
 
     def delayed_present(self, window, line=None, column=None):
         sleep(0.02)
@@ -146,7 +164,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             if column == None:
                 column = 0
 
-            print([line, column])
+#            print([line, column])
 
             textView = window.get_active_view()
 
@@ -163,6 +181,12 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
     def fit_window(self, action=None, data=None):
         document = self.window.get_active_document()
         textView = self.window.get_active_view()
+        scrolledWindow = textView.get_parent()
+#        print(scrolledWindow)
+#        print([
+#            scrolledWindow.get_property("min-content-height"),
+#            scrolledWindow.get_property("min-content-width"),
+#        ])
 
         if document != None:
             bounds = document.get_bounds()
@@ -197,7 +221,13 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             if height < 50:
                 height = 50
 
-            self.window.resize(width, height)
+            if False and type(scrolledWindow) == Gtk.ScrolledWindow:
+                scrolledWindow.set_min_content_width(width)
+                scrolledWindow.set_min_content_height(height)
+
+            else:
+                self.window.resize(width, height)
+#                self.window.event("check-resize")
 
     #        rect = textView.get_allocation()
     #        print((rect.width))
