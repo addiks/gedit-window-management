@@ -181,12 +181,6 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
     def fit_window(self, action=None, data=None):
         document = self.window.get_active_document()
         textView = self.window.get_active_view()
-        scrolledWindow = textView.get_parent()
-#        print(scrolledWindow)
-#        print([
-#            scrolledWindow.get_property("min-content-height"),
-#            scrolledWindow.get_property("min-content-width"),
-#        ])
 
         if document != None:
             bounds = document.get_bounds()
@@ -221,13 +215,8 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             if height < 50:
                 height = 50
 
-            if False and type(scrolledWindow) == Gtk.ScrolledWindow:
-                scrolledWindow.set_min_content_width(width)
-                scrolledWindow.set_min_content_height(height)
-
-            else:
-                self.window.resize(width, height)
-#                self.window.event("check-resize")
+            self.window.resize(width, height)
+            self.window.check_resize()
 
     #        rect = textView.get_allocation()
     #        print((rect.width))
