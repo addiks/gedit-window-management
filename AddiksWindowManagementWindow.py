@@ -133,24 +133,20 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
 
     def do_delayed_close_tab(self, window, tab, location=None, line=None, column=None):
         window.close_tab(tab)
-        if len(window.get_views())<=0:
+        if len(window.get_views()) <= 0:
             window.close()
 
         ### REOPEN IN NEW WINDOW
+        newWindow = AddiksWindowManagementApp.get().app.create_window()
+
         if location != None:
-            newWindow = AddiksWindowManagementApp.get().app.create_window()
+            tab = newWindow.create_tab_from_location(location, None, line, column, False, True)
 
-            if location != None:
-                tab = newWindow.create_tab_from_location(location, None, line, column, False, True)
-
-                document = tab.get_view().get_buffer()
-                textIter = document.get_end_iter().copy()
-                textIter.set_line(line)
-                textIter.set_line_offset(column)
-                tab.get_view().scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
-
-            else:
-                tab = newWindow.create_tab(True)
+            document = tab.get_view().get_buffer()
+            textIter = document.get_end_iter().copy()
+            textIter.set_line(line)
+            textIter.set_line_offset(column)
+            tab.get_view().scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
 
             start_new_thread(self.delayed_present, (newWindow, line, column))
 
