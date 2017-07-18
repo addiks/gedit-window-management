@@ -212,7 +212,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
                 height = 50
 
             self.window.resize(width, height)
-            self.window.check_resize()
+            GLib.idle_add(self.window.check_resize)
 
     #        rect = textView.get_allocation()
     #        print((rect.width))
