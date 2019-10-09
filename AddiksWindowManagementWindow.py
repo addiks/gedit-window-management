@@ -135,6 +135,8 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
         window.close_tab(tab)
         if len(window.get_views()) <= 0:
             window.close()
+            if AddiksWindowManagementApp.get().get_settings().get_boolean("autoresize"):
+                GLib.idle_add(self.fit_window, None, None, window)
 
         ### REOPEN IN NEW WINDOW
         newWindow = AddiksWindowManagementApp.get().app.create_window()
@@ -174,9 +176,12 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
         if AddiksWindowManagementApp.get().get_settings().get_boolean("autoresize"):
             self.fit_window(action, data)
 
-    def fit_window(self, action=None, data=None):
-        document = self.window.get_active_document()
-        textView = self.window.get_active_view()
+    def fit_window(self, action=None, data=None, window=None):
+        if window is None:
+            window = self.window
+
+        document = window.get_active_document()
+        textView = window.get_active_view()
 
         if document != None:
             bounds = document.get_bounds()
@@ -211,8 +216,8 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             if height < 50:
                 height = 50
 
-            self.window.resize(width, height)
-            GLib.idle_add(self.window.check_resize)
+            window.resize(width, height)
+            GLib.idle_add(window.check_resize)
 
     #        rect = textView.get_allocation()
     #        print((rect.width))
