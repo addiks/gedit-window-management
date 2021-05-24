@@ -51,11 +51,24 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
 
     def set_toolbar_visible(self, isVisible):
         windowChildren = self.window.get_children()
-        box = windowChildren[0]
         paned = None
-        for boxChild in box.get_children():
-            if type(boxChild) == Gtk.Paned:
-                paned = boxChild
+
+        for windowChild in windowChildren:
+            if type(windowChild) == Gtk.Paned:
+                paned = windowChild
+
+        if paned == None:
+            box = windowChildren[0]
+            for boxChild in box.get_children():
+                if type(boxChild) == Gtk.Paned:
+                    paned = boxChild
+
+            if paned == None:
+                for boxChild in box.get_children():
+                    if type(boxChild) == Gtk.Box:
+                        for boxSubChild in boxChild.get_children():
+                            if type(boxSubChild) == Gtk.Paned:
+                                paned = boxSubChild
 
         if paned != None:
             paned.set_visible(isVisible)
@@ -81,13 +94,13 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
         if AddiksWindowManagementApp.get().get_settings().get_boolean("no-double-files"):
             view = tab.get_view()
             document = view.get_buffer()
-            myLocation = document.get_location()
+            myLocation = document.get_file().get_location()
             if myLocation != None:
                 myPath = myLocation.get_path()
                 for otherWindow in AddiksWindowManagementApp.get().get_all_windows():
                     for otherView in otherWindow.window.get_views():
                         otherDocument = otherView.get_buffer()
-                        otherLocation = otherDocument.get_location()
+                        otherLocation = otherDocument.get_file().get_location()
                         if otherLocation != None:
                             path = otherLocation.get_path()
                             if path == myPath and otherWindow.window != window:
@@ -103,7 +116,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             ### DETERMINE LOCATION/LINE/COLUMN
 
             document = view.get_buffer()
-            location = document.get_location()
+            location = document.get_file().get_location()
 
             insertMark = view.get_buffer().get_insert()
             insertIter = view.get_buffer().get_iter_at_mark(insertMark)
@@ -121,7 +134,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
         if reOpen:
             view = tab.get_view()
             document = view.get_buffer()
-            location = document.get_location()
+            location = document.get_file().get_location()
 
             insertMark = view.get_buffer().get_insert()
             insertIter = view.get_buffer().get_iter_at_mark(insertMark)
@@ -145,7 +158,7 @@ class AddiksWindowManagementWindow(GObject.Object, Gedit.WindowActivatable):
             tab = newWindow.create_tab_from_location(location, None, line, column, False, True)
 
             document = tab.get_view().get_buffer()
-            textIter = document.get_end_iter().copy()
+            textIter = document.get_file().get_end_iter().copy()
             textIter.set_line(line)
             textIter.set_line_offset(column)
             tab.get_view().scroll_to_iter(textIter, 0.3, False, 0.0, 0.5)
